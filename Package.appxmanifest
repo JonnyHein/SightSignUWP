@@ -7,11 +7,11 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="fe95e7ed-6f74-4b72-9a74-3ab43f266f63"
+    Name="1ec9c53c-de64-4363-a9b0-0c176aa5c2c9"
     Publisher="CN=jonat"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="fe95e7ed-6f74-4b72-9a74-3ab43f266f63" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="1ec9c53c-de64-4363-a9b0-0c176aa5c2c9" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>SightSignUWP</DisplayName>
@@ -45,5 +45,6 @@
 
   <Capabilities>
     <Capability Name="internetClient" />
+    <DeviceCapability Name="gazeInput" />
   </Capabilities>
 </Package>

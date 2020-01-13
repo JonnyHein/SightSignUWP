@@ -1,75 +1,73 @@
-﻿<Page x:Class="SightSignUWP.MainPage"
+﻿<Page
+    x:Class="SightSignUWP.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SightSignUWP"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:sightSign="clr-namespace:SightSign"
-    mc:Ignorable="d" 
-    Height="480" 
-    Width="640"
-    KeyDown="Page_KeyDown"
-    Loaded="MainPage_OnLoaded">
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"    
+    mc:Ignorable="d">
 
-
-    <Page.Resources>
-
-    </Page.Resources>
-
-    <!-- The main app area. -->
-    <Grid Margin="40">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition />
-            <ColumnDefinition Width="auto" />
-        </Grid.ColumnDefinitions>
-
-        <!-- The column of big round buttons down the left side of the app. -->
-        <Grid HorizontalAlignment="Left"
-            Background="Transparent">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid x:Name="containerGrid">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition />
-                <RowDefinition Height="auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
-            <!-- The Write and Stamp buttons. -->
-            
+            <StackPanel x:Name="HeaderPanel" 
+                    Orientation="Horizontal" 
+                    Grid.Row="0">
+                <StackPanel.Transitions>
+                    <TransitionCollection>
+                        <AddDeleteThemeTransition/>
+                    </TransitionCollection>
+                </StackPanel.Transitions>
+                <TextBlock x:Name="Header" 
+                       Text="Gaze tracking sample" 
+                       Style="{ThemeResource HeaderTextBlockStyle}" 
+                       Margin="10,0,0,0" />
+                <TextBlock x:Name="TrackerCounterLabel"
+                       VerticalAlignment="Center"                 
+                       Style="{ThemeResource BodyTextBlockStyle}"
+                       Text="Number of trackers: " 
+                       Margin="50,0,0,0"/>
+                <TextBlock x:Name="TrackerCounter"
+                       VerticalAlignment="Center"                 
+                       Style="{ThemeResource BodyTextBlockStyle}"
+                       Text="0" 
+                       Margin="10,0,0,0"/>
+                <TextBlock x:Name="TrackerStateLabel"
+                       VerticalAlignment="Center"                 
+                       Style="{ThemeResource BodyTextBlockStyle}"
+                       Text="State: " 
+                       Margin="50,0,0,0"/>
+                <TextBlock x:Name="TrackerState"
+                       VerticalAlignment="Center"                 
+                       Style="{ThemeResource BodyTextBlockStyle}"
+                       Text="n/a" 
+                       Margin="10,0,0,0"/>
+            </StackPanel>
+            <Canvas x:Name="gazePositionCanvas" Grid.Row="1">
+                <controls:RadialProgressBar
+                    x:Name="GazeRadialProgressBar" 
+                    Value="0"
+                    Foreground="Blue" 
+                    Background="White"
+                    Thickness="4"
+                    Minimum="0"
+                    Maximum="100"
+                    Width="100"
+                    Height="100"
+                    Outline="Gray"
+                    Visibility="Collapsed"/>
+                <Ellipse 
+                    x:Name="eyeGazePositionEllipse"
+                    Width="20" Height="20"
+                    Fill="Blue" 
+                    Opacity="0.5" 
+                    Visibility="Collapsed">
+                </Ellipse>
+            </Canvas>
         </Grid>
-
-
-        <!--Signature Bank Grid that will display when the user selects Load.-->
-        <Grid
-            x:Name="SigBank"
-            Grid.Column="1" Grid.ColumnSpan="2"
-            Width="900"
-            Height="600"
-            Background="Coral"
-            Visibility="Collapsed">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-        </Grid>
-
-        <!-- The main area showing the ink and animating dot. -->
-        <Grid x:Name="canvas" Grid.Column="1" Grid.ColumnSpan="2">
-
-
-
-            <!-- The animating dot which runs along the ink. -->
-            
-        </Grid>
-
-        <!-- A grid column showing the Settings button at the right of the Page. -->
-       
-
     </Grid>
-
 </Page>
-
