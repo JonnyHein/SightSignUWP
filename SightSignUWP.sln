@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SightSignUWP", "SightSignUWP\SightSignUWP.csproj", "{F7EBB675-B53D-4FC8-A71C-48BA74BCB2B4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SightSignUWP", "SightSignUWP.csproj", "{F7EBB675-B53D-4FC8-A71C-48BA74BCB2B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +46,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CA439D41-6440-4926-A7AB-AAFCC49BA74B}
+		SolutionGuid = {4685DA54-852F-4873-8C35-DA822A752080}
 	EndGlobalSection
 EndGlobal
