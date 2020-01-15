@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.ViewManagement;
+using Windows.Graphics.Display;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -56,7 +57,14 @@ namespace SightSignUWP
 
             // Set application view to full screen by default
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
-            
+
+            // Assume the screen size won't change after the app starts.
+            var bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+            var scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+            Size size = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
+            Console.WriteLine("Size of window @ start up: " + size.Width + " " + size.Height);
+
+            /* TODO :: Need to configure RobotArm with dimensions of full screen. */
         }
 
         /// <summary>
