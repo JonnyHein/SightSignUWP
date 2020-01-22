@@ -29,7 +29,7 @@ namespace SightSignUWP
                 _zShift = value;
                 Move(LastPoint);
                 Settings1.Default.RobotZShift = _zShift;
-                Settings1.Default.Save();
+               // Settings1.Default.Save();
                 Trace.WriteLine($"ZShift: {_zShift}");
             }
         }
