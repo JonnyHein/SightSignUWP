@@ -1,4 +1,4 @@
-﻿namespace SightSign
+﻿namespace SightSignUWP
 {
     public interface IArm
     {
