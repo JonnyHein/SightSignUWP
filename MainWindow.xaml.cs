@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml;
-using DocumentFormat.OpenXml.Vml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
+using System.Windows.Data;
+using System.Windows.Ink;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
+using Microsoft.HandsFree.Mouse;
+using Microsoft.Win32;
+using System.Windows.Media.Imaging;
 
 namespace SightSign
 {
@@ -18,7 +20,7 @@ namespace SightSign
     // which is to be traced out by an animating dot. As the dot moves, it leaves a trail of 
     // ink that's added to other InkCanvas. Also as the dot moves, the app moves a robot arm 
     // such that the arm follows the same path as the dot. 
-    public partial class MainPage
+    public partial class MainWindow
     {
         public RobotArm RobotArm { get; }
         private readonly Settings _settings;
@@ -31,9 +33,9 @@ namespace SightSign
         private bool _inTimer;
 
         private bool _stampInProgress;
+        
 
-
-        public MainPage()
+        public MainWindow()
         {
             InitializeComponent();
 
@@ -59,7 +61,7 @@ namespace SightSign
                 RobotArm.ArmDown(false); // Lift the arm.
             }
 
-            SetDrawingAttributesFromSettings(InkCanvas.DefaultDrawingAttributes);
+            SetDrawingAttributesFromSettings(inkCanvas.DefaultDrawingAttributes);
 
             LoadInkOnStartup();
         }
@@ -81,12 +83,12 @@ namespace SightSign
             base.OnClosed(e);
         }
 
-        private void MainPage_OnLoaded(object sender, RoutedEventArgs e)
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
             GazeMouse.Attach(this);
         }
 
-        private void MainPage_OnClosing(object sender, CancelEventArgs e)
+        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
             GazeMouse.DetachAll();
         }
@@ -117,7 +119,7 @@ namespace SightSign
             }
 
             // Remove any existing ink first.
-            InkCanvas.Strokes.Clear();
+            inkCanvas.Strokes.Clear();
 
             // Assume the file is valid and accessible.
             var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
@@ -514,7 +516,7 @@ namespace SightSign
         private void AddFirstPointToNewStroke(StylusPoint pt)
         {
             // Create a new stroke for the continuing animation.
-            var ptCollection = new StylusPointCollection { pt };
+            var ptCollection = new StylusPointCollection {pt};
 
             _strokeBeingAnimated = new Stroke(ptCollection);
 
@@ -594,9 +596,9 @@ namespace SightSign
         private void CaptureScreen(string fileDest)
         {
             //get the virtual screen dimensions w/o left and right navigation grid columns
-            double screenLeft = (1.4) * NavGrid.ActualWidth;
-            double screenTop = SystemParameters.VirtualScreenTop + NavGrid.ActualWidth / 2;
-            double screenWidth = canvas.ActualWidth - (1.2) * settingsGrid.ActualWidth;
+            double screenLeft = (1.4)*NavGrid.ActualWidth;
+            double screenTop = SystemParameters.VirtualScreenTop + NavGrid.ActualWidth/2;
+            double screenWidth = canvas.ActualWidth - (1.2)*settingsGrid.ActualWidth;
             double screenHeight = SystemParameters.VirtualScreenHeight - NavGrid.ActualWidth;
 
             using (System.Drawing.Bitmap bmap = new System.Drawing.Bitmap((int)screenWidth, (int)screenHeight))
@@ -638,9 +640,9 @@ namespace SightSign
                 var file = new FileStream(fileName, FileMode.Create, FileAccess.Write);
                 inkCanvas.Strokes.Save(file);
                 file.Close();
-
+        
                 this.CaptureScreen(fileName);
-
+                
                 // This ink will be automatically loaded when the app next starts.
                 Settings1.Default.LoadedInkLocation = fileName;
                 Settings1.Default.Save();
@@ -663,10 +665,9 @@ namespace SightSign
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
             SigBank.Children.Clear();
-            if (SigBank.Visibility == Visibility.Collapsed)
-            {
+            if (SigBank.Visibility == Visibility.Collapsed){
                 LoadButton.Content = "Close";
-
+                
                 // Read all signatures from ..//sigBank
                 string sigBankImagePath = System.IO.Directory.GetCurrentDirectory() + "\\sigBank\\img";
                 string[] sigImagePaths = Directory.GetFiles(sigBankImagePath);
@@ -676,7 +677,7 @@ namespace SightSign
                 int count = 0;
                 while (count < sigImagePaths.Length && count < 4)
                 {
-                    recentSigImagePaths[count] = sigImagePaths[(sigImagePaths.Length - 1) - count];
+                    recentSigImagePaths[count] = sigImagePaths[(sigImagePaths.Length-1) - count];
                     count++;
                 }
 
@@ -708,17 +709,17 @@ namespace SightSign
                     btn.Name = name;
                     btn.Click += ThumbnailButton_Click;
                     btn.Content = img;
-                    btn.SetValue(System.Windows.Controls.Grid.ColumnProperty, i % 2); //assign row & column and row propeties 
+                    btn.SetValue(System.Windows.Controls.Grid.ColumnProperty, i%2); //assign row & column and row propeties 
                     btn.SetValue(System.Windows.Controls.Grid.RowProperty, row);
                     btn.MaxHeight = img.Height;
                     btn.MaxWidth = img.Width;
                     btn.Background = Brushes.Transparent;
-                    btn.BorderBrush = Brushes.Transparent;
+                    btn.BorderBrush = Brushes.Transparent;                  
 
                     SigBank.Children.Add(btn);
                 }
 
-                SigBank.Visibility = Visibility.Visible;
+                SigBank.Visibility = Visibility.Visible;               
             }
             else
             {
@@ -733,8 +734,8 @@ namespace SightSign
         {
             //convert sender to button; replace octal 
             System.Windows.Controls.Button btn_clicked = (System.Windows.Controls.Button)sender;
-            string fileName = btn_clicked.Name;
-            fileName = fileName.Replace("3A", ":").Replace("5C", "\\").Replace("img", "ink") + ".isf";
+            string fileName = btn_clicked.Name; 
+            fileName = fileName.Replace("3A", ":").Replace("5C", "\\").Replace("img","ink") + ".isf";
 
 
             AddInkFromFile(fileName);
@@ -751,7 +752,7 @@ namespace SightSign
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            var settingsWindow = new SettingsWindow(this, _settings, RobotArm) { Owner = this };
+            var settingsWindow = new SettingsWindow(this, _settings, RobotArm) {Owner = this};
 
             settingsWindow.ShowDialog();
         }
