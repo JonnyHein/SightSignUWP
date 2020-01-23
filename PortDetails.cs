@@ -49,19 +49,22 @@
             //    }
             //}
 
-            //throw new Exception("Could not find COM port");
 
             string aqs = SerialDevice.GetDeviceSelector();
             var deviceCollection = await DeviceInformation.FindAllAsync(aqs);
             List<string> portNamesList = new List<string>();
             foreach (var item in deviceCollection)
             {
-                var serialDevice = await SerialDevice.FromIdAsync(item.Id);
-                var portName = serialDevice.PortName;
-                portNamesList.Add(portName);
+                if (item.Id.Contains("USB#VID_2341&PID_0042"))
+                {
+                    var serialDevice = await SerialDevice.FromIdAsync(item.Id);
+                    var portName = serialDevice.PortName;
+                    return portName;
+                }
+                //portNamesList.Add(portName);
             }
 
-            return null;
+            throw new Exception("Could not find COM port");
         }
     }
 }
