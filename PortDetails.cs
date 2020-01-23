@@ -49,19 +49,19 @@
             //    }
             //}
 
-
+            /* Find all serial devices on the Machine */
             string aqs = SerialDevice.GetDeviceSelector();
             var deviceCollection = await DeviceInformation.FindAllAsync(aqs);
-            List<string> portNamesList = new List<string>();
+
             foreach (var item in deviceCollection)
             {
+                /* return COM port if item is uARM Swift Pro*/
                 if (item.Id.Contains("USB#VID_2341&PID_0042"))
                 {
                     var serialDevice = await SerialDevice.FromIdAsync(item.Id);
                     var portName = serialDevice.PortName;
                     return portName;
                 }
-                //portNamesList.Add(portName);
             }
 
             throw new Exception("Could not find COM port");
