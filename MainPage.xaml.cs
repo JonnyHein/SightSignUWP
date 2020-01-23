@@ -56,6 +56,7 @@ namespace SightSignUWP
 
             // Set application view to full screen by default
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
+            _ = PortDetails.FindPortAsync();
             
         }
 

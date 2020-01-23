@@ -1,4 +1,4 @@
-﻿namespace SightSign
+﻿namespace SightSignUWP
 {
     using System;
     using System.Collections.Generic;
