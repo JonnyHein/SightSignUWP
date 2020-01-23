@@ -12,7 +12,7 @@ using DocumentFormat.OpenXml.Vml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
-namespace SightSign
+namespace SightSignUWP
 {
     // This Window hosts two InkCanvases. The InkCanvas that's lower in the z-order shows ink 
     // which is to be traced out by an animating dot. As the dot moves, it leaves a trail of 
