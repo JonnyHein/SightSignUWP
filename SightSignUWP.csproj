@@ -133,6 +133,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Settings2.cs" />
+    <Compile Include="UArmSwift.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
