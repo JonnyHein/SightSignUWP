@@ -30,8 +30,7 @@ namespace SightSignUWP
         {
             SerialPort _serialPort = new SerialPort(this._port, 115200, Parity.None, 8, StopBits.One)
             {
-                DtrEnable = true,
-                RtsEnable = true
+                DtrEnable = true
         };
             _serialPort.DataReceived += this.DataReceived;
 
@@ -40,9 +39,6 @@ namespace SightSignUWP
                 try
                 {
                     _serialPort.Open();
-                    _serialPort.Write("G2210 S150 R90 H50 F10000\n");
-                    _serialPort.Close();
-
                 }
                 catch (UnauthorizedAccessException e)
                 {
@@ -66,7 +62,16 @@ namespace SightSignUWP
                 }
 
             }
-          
+
+            try
+            {
+                _serialPort.Write("G0 X100 Y100 Z100 F1000\n");
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
 
             //_arm = new UArmSwift(_port);
             //_arm.Connect();
