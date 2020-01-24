@@ -1,31 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Brief.Robotics;
 
 namespace SightSignUWP
 {
     public class UArmSwiftPro : IArm
     {
+        //private UArmSwift _arm;
         private readonly string _port;
-        private UArmSwift _arm;
 
         public UArmSwiftPro()
         {
-            _port = PortDetails.FindPort();
+            _port = GetPort();
         }
+
+        // Get port through async arrow function & return result
+        private string GetPort()
+        {
+            var task = System.Threading.Tasks.Task.Run(async () => await PortDetails.FindPortAsync());
+            task.Wait();
+            return task.Result;
+        }
+
 
         public void Connect()
         {
-            _arm = new UArmSwift(_port);
-            _arm.Connect();
-            _arm.Mode(Mode.UniversalHolder);
+            //_arm = new UArmSwift(_port);
+            //_arm.Connect();
+            //_arm.Mode(Mode.UniversalHolder);
         }
 
         public void Disconnect()
         {
-            _arm.Disconnect();
-            _arm = null;
+            //_arm.Disconnect();
+            //_arm = null;
         }
 
         public void Move(double x, double y, double z, bool scara)
@@ -37,7 +45,7 @@ namespace SightSignUWP
             var zz = z * 20.0 + 50;
             System.Diagnostics.Debug.WriteLine($"X={xx} Y={yy} Z={zz}");
 
-            _arm.MoveXYZ(xx, yy, zz, 20000);
+            //_arm.MoveXYZ(xx, yy, zz, 20000);
         }
     }
 }

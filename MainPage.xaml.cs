@@ -47,6 +47,10 @@ namespace SightSignUWP
         /// </summary>
         bool timerStarted = false;
 
+        public RobotArm RobotArm { get; }
+        private readonly Settings _settings;
+
+
         /// <summary>
         /// Initialize the app.
         /// </summary>
@@ -54,10 +58,21 @@ namespace SightSignUWP
         {
             InitializeComponent();
 
-            // Set application view to full screen by default
+            // Set application window to full screen & get its dimensions.
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.FullScreen;
-            _ = PortDetails.FindPortAsync();
-            
+            var bounds = Window.Current.Bounds;
+            double appHeight = bounds.Height;
+            double appWidth = bounds.Width;
+
+            // instantiate Robot Arm & settings
+            RobotArm = new RobotArm(
+                appWidth / 2.0,
+                appHeight / 2.0,
+                Math.Min(appWidth, appHeight) / 2.0,
+                new UArmSwiftPro());
+
+            _settings = new Settings(RobotArm);
+            DataContext = _settings;
         }
 
     //    /// <summary>

@@ -32,8 +32,9 @@
                 if (item.Id.Contains("USB#VID_2341&PID_0042"))
                 {
                     var serialDevice = await SerialDevice.FromIdAsync(item.Id);
-                    var portName = serialDevice.PortName;
-                    return portName;
+                    string portName = serialDevice.PortName;
+                    return await System.Threading.Tasks.Task.FromResult(portName);
+                    //return portName;
                 }
             }
 

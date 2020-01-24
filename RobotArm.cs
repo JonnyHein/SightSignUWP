@@ -34,9 +34,9 @@ namespace SightSignUWP
             }
         }
 
-        private readonly IArm _arm;
+        private readonly UArmSwiftPro _arm;
 
-        public RobotArm(double xShift, double yShift, double minDimensionHalf, IArm arm)
+        public RobotArm(double xShift, double yShift, double minDimensionHalf, UArmSwiftPro arm)
         {
             _xShift = xShift;
             _yShift = yShift;
