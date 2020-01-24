@@ -73,6 +73,11 @@ namespace SightSignUWP
 
             _settings = new Settings(RobotArm);
             DataContext = _settings;
+
+            if (_settings.RobotControl)
+            {
+                RobotArm.Connect();
+            }
         }
 
     //    /// <summary>

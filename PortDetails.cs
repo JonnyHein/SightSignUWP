@@ -33,8 +33,8 @@
                 {
                     var serialDevice = await SerialDevice.FromIdAsync(item.Id);
                     string portName = serialDevice.PortName;
-                    return await System.Threading.Tasks.Task.FromResult(portName);
-                    //return portName;
+                    serialDevice.Dispose();
+                    return portName;
                 }
             }
 
