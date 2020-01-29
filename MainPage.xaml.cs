@@ -11,6 +11,7 @@ using Windows.UI.Xaml;
 using DocumentFormat.OpenXml.Vml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Input.Inking;
 
 namespace SightSignUWP
 {
@@ -59,18 +60,18 @@ namespace SightSignUWP
                 RobotArm.ArmDown(false); // Lift the arm.
             }
 
-            SetDrawingAttributesFromSettings(InkCanvas.DefaultDrawingAttributes);
+            InkDrawingAttributes drawingAttributes = new InkDrawingAttributes();
+            SetDrawingAttributesFromSettings(drawingAttributes);
 
             LoadInkOnStartup();
         }
 
-        private void SetDrawingAttributesFromSettings(DrawingAttributes attributes)
+        private void SetDrawingAttributesFromSettings(InkDrawingAttributes attributes)
         {
             attributes.Color = _settings.InkColor;
-            attributes.Width = _settings.InkWidth;
-            attributes.Height = _settings.InkWidth;
+            attributes.Size = _settings.InkWidth;
 
-            attributes.StylusTip = StylusTip.Ellipse;
+            attributes.PenTip = Windows.UI.Input.Inking.PenTipShape.Circle;
         }
 
         protected override void OnClosed(EventArgs e)
