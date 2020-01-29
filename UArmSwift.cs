@@ -28,10 +28,10 @@ namespace SightSignUWP
 
         public void Connect()
         {
-            SerialPort _serialPort = new SerialPort(this._port, 115200, Parity.None, 8, StopBits.One)
-            {
-                DtrEnable = true
-        };
+            SerialPort _serialPort = new SerialPort(this._port, 115200);
+            //{
+            //    DtrEnable = true
+            //};
             _serialPort.DataReceived += this.DataReceived;
 
             if (!_serialPort.IsOpen)
@@ -65,7 +65,7 @@ namespace SightSignUWP
 
             try
             {
-                _serialPort.Write("G0 X100 Y100 Z100 F1000\n");
+                _serialPort.WriteLine("G0 X250 Y0 Z130 F10000");
             }
             catch(Exception e)
             {
