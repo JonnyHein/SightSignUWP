@@ -12,6 +12,7 @@ using DocumentFormat.OpenXml.Vml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Input.Inking;
+using Windows.Storage.Streams;
 
 namespace SightSignUWP
 {
@@ -110,7 +111,7 @@ namespace SightSignUWP
         }
 
         // Add ink to the InkCanvas, based on the contents of the supplied ISF file.
-        private void AddInkFromFile(string filename)
+        private async void AddInkFromFile(string filename)
         {
             if (string.IsNullOrEmpty(filename))
             {
@@ -118,18 +119,28 @@ namespace SightSignUWP
             }
 
             // Remove any existing ink first.
-            InkCanvas.Strokes.Clear();
+            // This will do it, inkCanvas not showing up for whatever reason
+            inkCanvas.InkPresenter.StrokeContainer.Clear();
 
             // Assume the file is valid and accessible.
-            var file = new FileStream(filename, FileMode.Open, FileAccess.Read);
-            var strokeCollection = new StrokeCollection(file);
-            file.Close();
+            Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            Windows.Storage.StorageFile file = await storageFolder.GetFileAsync(filename);
 
-            if (strokeCollection.Count > 0)
+            // Open a file stream for reading
+            IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+
+            // Read from the file
+            using (var inputStream = fileStream.GetInputStreamAt(0))
+            {
+                await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(fileStream);
+            }
+            fileStream.Dispose();
+
+            if (inkCanvas.InkPresenter.StrokeContainer.Count > 0)
             {
                 // Add ink to the InkCanvas, similar to the ink loaded from the supplied file,
                 // but with evenly distributed points along the strokes.
-                GenerateStrokesWithEvenlyDistributedPoints(strokeCollection);
+                GenerateStrokesWithEvenlyDistributedPoints(inkCanvas.InkPresenter.StrokeContainer);
 
                 ApplySettingsToInk();
             }
