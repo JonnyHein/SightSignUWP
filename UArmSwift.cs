@@ -12,6 +12,7 @@ namespace SightSignUWP
     {
         //private UArmSwift _arm;
         private readonly string _port;
+        private SerialPort _serialPort;
 
         public UArmSwiftPro()
         {
@@ -33,12 +34,14 @@ namespace SightSignUWP
                 DtrEnable = true
             };
             _serialPort.DataReceived += this.DataReceived;
+            this._serialPort = _serialPort;
 
-            if (!_serialPort.IsOpen)
+            if (!this._serialPort.IsOpen)
             {
                 try
                 {
-                    _serialPort.Open();
+                    this._serialPort.Open();
+                    Thread.Sleep(2000);
                 }
                 catch (UnauthorizedAccessException e)
                 {
@@ -60,23 +63,9 @@ namespace SightSignUWP
                 {
                     Console.WriteLine("InvalidOperationException" + e);
                 }
-
             }
 
-            if (_serialPort.IsOpen)
-            {
-                try
-                {
-                    _serialPort.WriteLine("G0 X250 Y0 Z130 F10000");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            }
-          
-
-
+            //Move(1, 2, 3, false);
             //_arm = new UArmSwift(_port);
             //_arm.Connect();
             //_arm.Mode(Mode.UniversalHolder);
@@ -93,6 +82,7 @@ namespace SightSignUWP
 
         public void Disconnect()
         {
+            _serialPort.Close();
             //_arm.Disconnect();
             //_arm = null;
         }
@@ -104,7 +94,19 @@ namespace SightSignUWP
             var xx = x * 70.0 * scale + 200.0; 
             var yy = y * 100.0 * scale + 50.0;
             var zz = z * 20.0 + 50;
-            System.Diagnostics.Debug.WriteLine($"X={xx} Y={yy} Z={zz}");
+
+            if (_serialPort.IsOpen)
+            {
+                try
+                {
+                    _serialPort.WriteLine($"G0 X{xx} Y{yy} Z{zz} F30000");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+
 
             //_arm.MoveXYZ(xx, yy, zz, 20000);
         }
