@@ -149,9 +149,9 @@ namespace SightSignUWP
         // Apply the current settings to the currently loaded ink.
         private void ApplySettingsToInk()
         {
-            if (inkCanvas.Strokes.Count > 0)
+            if (inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count > 0)
             {
-                foreach (var stroke in inkCanvas.Strokes)
+                foreach (var stroke in inkCanvas.InkPresenter.StrokeContainer.GetStrokes())
                 {
                     SetDrawingAttributesFromSettings(stroke.DrawingAttributes);
                 }
@@ -163,13 +163,14 @@ namespace SightSignUWP
         // dot along the ink shown in the InkCanvas, the dot's speed is constant. If ink generated 
         // by the user was used for dot animation, then the dot's speed would vary based on the 
         // speed at which the ink was written.
-        private void GenerateStrokesWithEvenlyDistributedPoints(StrokeCollection strokeCollection)
+        private void GenerateStrokesWithEvenlyDistributedPoints(InkStrokeContainer strokeContainer)
         {
             double baseLength = 0;
 
-            for (var idx = 0; idx < strokeCollection.Count; ++idx)
+            for (var idx = 0; idx < strokeContainer.GetStrokes().Count; ++idx)
             {
-                var existingStylusPoints = strokeCollection[idx].StylusPoints;
+                // Not sure of the solution to this conversion yet
+                var existingStylusPoints = strokeContainer[idx].StylusPoints;
                 if (existingStylusPoints.Count > 0)
                 {
                     // First create a PathGeometry from all the points making up this stroke.
@@ -221,7 +222,7 @@ namespace SightSignUWP
                     if (stylusPoints.Count > 0)
                     {
                         var stroke = new Stroke(stylusPoints);
-                        inkCanvas.Strokes.Add(stroke);
+                        inkCanvas.InkPresenter.StrokeContainer.AddStroke(stroke);
                     }
                 }
             }

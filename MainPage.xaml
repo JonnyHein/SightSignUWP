@@ -10,11 +10,11 @@
 
     <Window.Resources>
 
-        <sightSign:ArmConnectedToContentConverter x:Key="ArmConnectedToContentConverter"/>
-        <sightSign:ArmConnectedToHelpTextConverter x:Key="ArmConnectedToHelpTextConverter"/>
-        <sightSign:ArmStateToDotFillConverter x:Key="ArmStateToDotFillConverter"/>
-        <sightSign:ArmStateToDotWidthConverter x:Key="ArmStateToDotWidthConverter"/>
-        <sightSign:ColorToSolidBrushConverter x:Key="ColorToSolidBrushConverter"/>
+        <SightSignUWP:ArmConnectedToContentConverter x:Key="ArmConnectedToContentConverter"/>
+        <SightSignUWP:ArmConnectedToHelpTextConverter x:Key="ArmConnectedToHelpTextConverter"/>
+        <SightSignUWP:ArmStateToDotFillConverter x:Key="ArmStateToDotFillConverter"/>
+        <SightSignUWP:ArmStateToDotWidthConverter x:Key="ArmStateToDotWidthConverter"/>
+        <SightSignUWP:ColorToSolidBrushConverter x:Key="ColorToSolidBrushConverter"/>
 
     </Window.Resources>
 
@@ -40,7 +40,7 @@
             </Grid.RowDefinitions>
 
             <!-- The Write and Stamp buttons. -->
-            <SightSignUWP:CircularGazeButton x:Name="StampButton"
+            <local:CircularGazeButton x:Name="StampButton"
                                           Foreground="{Binding ButtonTextColor,
                                                 Converter={StaticResource ColorToSolidBrushConverter}}"
                                           Radius="60"
@@ -50,7 +50,7 @@
                                           StrokeThickness="5"
                                           Margin="0,0,0,40"/>
 
-            <SightSignUWP:CircularGazeButton Grid.Row="1"
+            <local:CircularGazeButton Grid.Row="1"
                                           x:Name="WriteButton"
                                           Foreground="{Binding ButtonTextColor,
                                                 Converter={StaticResource ColorToSolidBrushConverter}}"
@@ -63,7 +63,7 @@
 
             <!-- The inking-related Clear, Save and Load buttons. -->
 
-            <sightSign:CircularGazeButton Grid.Row="0"
+            <SightSignUWP:CircularGazeButton Grid.Row="0"
                                           x:Name="ClearButton"
                                           Visibility="Collapsed"
                                           Foreground="{Binding ButtonTextColor,
@@ -75,7 +75,7 @@
                                           StrokeThickness="5"
                                           Margin="0,0,0,20"/>
 
-            <sightSign:CircularGazeButton Grid.Row="1"
+            <SightSignUWP:CircularGazeButton Grid.Row="1"
                                           x:Name="SaveButton"
                                           Visibility="Collapsed"
                                           Foreground="{Binding ButtonTextColor,
@@ -87,7 +87,7 @@
                                           StrokeThickness="5"
                                           Margin="0,0,0,20"/>
 
-            <sightSign:CircularGazeButton Grid.Row="2"
+            <SightSignUWP:CircularGazeButton Grid.Row="2"
                                           x:Name="LoadButton"
                                           Visibility="Collapsed"
                                           Foreground="{Binding ButtonTextColor,
@@ -100,7 +100,7 @@
                                           Margin="0,0,0,20"/>
 
             <!-- The Edit/Done button. -->
-            <sightSign:CircularGazeButton Grid.Row="4"
+            <SightSignUWP:CircularGazeButton Grid.Row="4"
                                           x:Name="EditButton"
                                           Foreground="{Binding ButtonTextColor,
                                                 Converter={StaticResource ColorToSolidBrushConverter}}"
@@ -222,7 +222,7 @@
                 <RowDefinition />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <sightSign:CircularGazeButton Grid.Row="1"
+            <SightSignUWP:CircularGazeButton Grid.Row="1"
                                           x:Name="SettingsButton"
                                           AutomationProperties.Name="Settings"
                                           AutomationProperties.HelpText="{Binding Arm.Connected,
