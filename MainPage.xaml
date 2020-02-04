@@ -9,20 +9,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid x:Name="containerGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <StackPanel x:Name="HeaderPanel" 
-                    Orientation="Horizontal" 
-                    Grid.Row="0">
-                <StackPanel.Transitions>
-                    <TransitionCollection>
-                        <AddDeleteThemeTransition/>
-                    </TransitionCollection>
-                </StackPanel.Transitions>
-                <TextBlock x:Name="Header" 
+            <!--<TextBlock x:Name="Header" 
                        Text="Gaze tracking sample" 
                        Style="{ThemeResource HeaderTextBlockStyle}" 
                        Margin="10,0,0,0" />
@@ -67,7 +54,22 @@
                     Opacity="0.5" 
                     Visibility="Collapsed">
                 </Ellipse>
-            </Canvas>
-        </Grid>
+            </Canvas>-->
+                
+
+                    <!-- The InkCanvas showing the default ink of the ink drawn by the user. -->
+                    <InkCanvas 
+                        AutomationProperties.Name="Background ink canvas"
+                        x:Name="inkCanvas" 
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                    />
+
+                    <!-- The InkCanvas showing the ink as it's being traced out. -->
+                    <!--<InkCanvas 
+                    AutomationProperties.Name="Tracing ink canvas"
+                    x:Name="inkCanvasAnimations"  
+                    IsHitTestVisible="True"
+                    Visibility="Collapsed" />-->
     </Grid>
 </Page>

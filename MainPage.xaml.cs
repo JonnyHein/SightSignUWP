@@ -8,6 +8,11 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.ViewManagement;
 using System.IO;
+using Windows.UI.Input.Inking;
+using Windows.UI.Input.Inking.Analysis;
+using Windows.UI.Xaml.Shapes;
+using Windows.Storage.Streams;
+using Windows.UI.Core;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -80,12 +85,39 @@ namespace SightSignUWP
                 RobotArm.Connect();
                 RobotArm.ArmDown(false); // Lift the arm.
             }
+
+            // set the default drawing attributes
+            InkDrawingAttributes drawingAttributes = new InkDrawingAttributes();
+            SetDrawingAttributesFromSettings(drawingAttributes);
+            inkCanvas.InkPresenter.UpdateDefaultDrawingAttributes(drawingAttributes);
+
+            inkCanvas.InkPresenter.InputDeviceTypes =
+                    CoreInputDeviceTypes.Mouse |
+                    CoreInputDeviceTypes.Pen |
+                    CoreInputDeviceTypes.Touch;
+
+            LoadInkOnStartup();
         }
+
+        private void SetDrawingAttributesFromSettings(InkDrawingAttributes defaultDrawingAttributes)
+        {
+            defaultDrawingAttributes.Color = Windows.UI.Colors.DarkOliveGreen;
+
+            // set Stroke Size through with same width and height
+            Size strokeSize;
+            strokeSize.Width = strokeSize.Height = _settings.InkWidth;
+            defaultDrawingAttributes.Size = strokeSize;
+
+            defaultDrawingAttributes.PenTip = PenTipShape.Circle;
+            
+        }
+
 
         /// <summary>
         /// There is more function in the WPF before this one...
         /// Just integrating this in so that it can load in a signature from a file.
         /// </summary>
+
 
         // Load up ink based on the ink that was shown when the app was last run.
         private void LoadInkOnStartup()
@@ -103,6 +135,40 @@ namespace SightSignUWP
             }
         }
 
+
+        /// <summary>
+        /// Add ink to the InkCanvas, based on the contents of the supplied ISF file.
+        /// </summary>
+        private async void AddInkFromFile(string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+            {
+                return;
+            }
+
+            // Remove any existing ink first.
+            inkCanvas.InkPresenter.StrokeContainer.Clear();
+
+            // Assume the file is valid and accessible
+            var file = new FileStream(filename, FileMode.Open, FileAccess.Read); // new FileStream(filename, FileMode.Open, FileAccess.Read);
+            if (file != null)
+            {
+                IInputStream stream = file.AsInputStream();
+                await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
+                
+                stream.Dispose();
+            }
+            file.Close();
+
+            //if (strokeCollection.Count > 0)
+            //{
+            //    // Add ink to the InkCanvas, similar to the ink loaded from the supplied file,
+            //    // but with evenly distributed points along the strokes.
+            //    GenerateStrokesWithEvenlyDistributedPoints(strokeCollection);
+
+            //    ApplySettingsToInk();
+            //}
+        }
         //    /// <summary>
         //    /// Override of OnNavigatedTo page event starts GazeDeviceWatcher.
         //    /// </summary>
