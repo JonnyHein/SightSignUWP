@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls.Decorator;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml;
 using DocumentFormat.OpenXml.Vml;
@@ -21,10 +20,15 @@ namespace SightSignUWP
     // which is to be traced out by an animating dot. As the dot moves, it leaves a trail of 
     // ink that's added to other InkCanvas. Also as the dot moves, the app moves a robot arm 
     // such that the arm follows the same path as the dot. 
-    public partial class MainPage
+    public partial class MainPage : Page
     {
         public RobotArm RobotArm { get; }
-        public object inkCanvas { get; private set; }
+        public Button EditButton { get; private set; }
+        public Button StampButton { get; private set; }
+        public Button ClearButton { get; private set; }
+        public Button SaveButton { get; private set; }
+        public Button LoadButton { get; private set; }
+        public Button WriteButton { get; private set; }
 
         private readonly Settings _settings;
 
@@ -36,7 +40,8 @@ namespace SightSignUWP
         private bool _inTimer;
 
         private bool _stampInProgress;
-
+        private InkCanvas inkCanvas;
+        private InkCanvas inkCanvasAnimations;
 
         public MainPage()
         {
@@ -152,7 +157,7 @@ namespace SightSignUWP
         // Apply the current settings to the currently loaded ink.
         private void ApplySettingsToInk()
         {
-            if (InkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count > 0)
+            if (inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count > 0)
             {
                 foreach (var stroke in inkCanvas.InkPresenter.StrokeContainer.GetStrokes())
                 {
@@ -849,14 +854,14 @@ namespace SightSignUWP
 
     public class ArmConnectedToContentConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, String culture)
         {
             var armConnected = (bool)value;
 
             return "\uE99A" + (armConnected ? "\uE10B" : "\uE10A");
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, String culture)
         {
             throw new NotImplementedException();
         }
@@ -864,14 +869,14 @@ namespace SightSignUWP
 
     public class ArmConnectedToHelpTextConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, String culture)
         {
             var armConnected = (bool)value;
 
             return "Robot " + (armConnected ? "connected" : "disconnected");
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, String culture)
         {
             throw new NotImplementedException();
         }
@@ -879,7 +884,7 @@ namespace SightSignUWP
 
     public class ArmStateToDotFillConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, String culture)
         {
             var armDown = (bool)value;
 
@@ -889,7 +894,7 @@ namespace SightSignUWP
                 color.A, color.R, color.G, color.B));
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, String culture)
         {
             throw new NotImplementedException();
         }
@@ -897,14 +902,14 @@ namespace SightSignUWP
 
     public class ArmStateToDotWidthConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, String culture)
         {
             var armDown = (bool)value;
 
             return (armDown ? Settings1.Default.DotDownWidth : Settings1.Default.DotWidth);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, String culture)
         {
             throw new NotImplementedException();
         }
