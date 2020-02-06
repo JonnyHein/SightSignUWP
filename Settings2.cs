@@ -1,4 +1,4 @@
-﻿namespace SightSign.Properties {
+﻿namespace SightSignUWP.Properties {
     
     
     // This class allows you to handle specific events on the settings class:

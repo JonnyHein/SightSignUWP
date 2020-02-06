@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls.Decorator;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml;
 using DocumentFormat.OpenXml.Vml;
@@ -23,6 +24,8 @@ namespace SightSignUWP
     public partial class MainPage
     {
         public RobotArm RobotArm { get; }
+        public object inkCanvas { get; private set; }
+
         private readonly Settings _settings;
 
         // Related to the animation of the dot.
@@ -70,7 +73,7 @@ namespace SightSignUWP
         private void SetDrawingAttributesFromSettings(InkDrawingAttributes attributes)
         {
             attributes.Color = _settings.InkColor;
-            attributes.Size = _settings.InkWidth;
+            attributes.Size = new Windows.Foundation.Size(_settings.InkWidth, _settings.InkWidth);
 
             attributes.PenTip = Windows.UI.Input.Inking.PenTipShape.Circle;
         }
@@ -149,7 +152,7 @@ namespace SightSignUWP
         // Apply the current settings to the currently loaded ink.
         private void ApplySettingsToInk()
         {
-            if (inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count > 0)
+            if (InkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count > 0)
             {
                 foreach (var stroke in inkCanvas.InkPresenter.StrokeContainer.GetStrokes())
                 {

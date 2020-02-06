@@ -8,15 +8,15 @@
     mc:Ignorable="d">
 
 
-    <Window.Resources>
+    <Page.Resources>
 
-        <SightSignUWP:ArmConnectedToContentConverter x:Key="ArmConnectedToContentConverter"/>
-        <SightSignUWP:ArmConnectedToHelpTextConverter x:Key="ArmConnectedToHelpTextConverter"/>
-        <SightSignUWP:ArmStateToDotFillConverter x:Key="ArmStateToDotFillConverter"/>
-        <SightSignUWP:ArmStateToDotWidthConverter x:Key="ArmStateToDotWidthConverter"/>
-        <SightSignUWP:ColorToSolidBrushConverter x:Key="ColorToSolidBrushConverter"/>
+        <local:ArmConnectedToContentConverter x:Key="ArmConnectedToContentConverter"/>
+        <local:ArmConnectedToHelpTextConverter x:Key="ArmConnectedToHelpTextConverter"/>
+        <local:ArmStateToDotFillConverter x:Key="ArmStateToDotFillConverter"/>
+        <local:ArmStateToDotWidthConverter x:Key="ArmStateToDotWidthConverter"/>
+        <local:ColorToSolidBrushConverter x:Key="ColorToSolidBrushConverter"/>
 
-    </Window.Resources>
+    </Page.Resources>
 
     <!-- The main app area. -->
     <Grid x:Name="MainAppGrid" Margin="40">
@@ -63,7 +63,7 @@
 
             <!-- The inking-related Clear, Save and Load buttons. -->
 
-            <SightSignUWP:CircularGazeButton Grid.Row="0"
+            <local:CircularGazeButton Grid.Row="0"
                                           x:Name="ClearButton"
                                           Visibility="Collapsed"
                                           Foreground="{Binding ButtonTextColor,
@@ -75,7 +75,7 @@
                                           StrokeThickness="5"
                                           Margin="0,0,0,20"/>
 
-            <SightSignUWP:CircularGazeButton Grid.Row="1"
+            <local:CircularGazeButton Grid.Row="1"
                                           x:Name="SaveButton"
                                           Visibility="Collapsed"
                                           Foreground="{Binding ButtonTextColor,
@@ -87,7 +87,7 @@
                                           StrokeThickness="5"
                                           Margin="0,0,0,20"/>
 
-            <SightSignUWP:CircularGazeButton Grid.Row="2"
+            <local:CircularGazeButton Grid.Row="2"
                                           x:Name="LoadButton"
                                           Visibility="Collapsed"
                                           Foreground="{Binding ButtonTextColor,
@@ -100,7 +100,7 @@
                                           Margin="0,0,0,20"/>
 
             <!-- The Edit/Done button. -->
-            <SightSignUWP:CircularGazeButton Grid.Row="4"
+            <local:CircularGazeButton Grid.Row="4"
                                           x:Name="EditButton"
                                           Foreground="{Binding ButtonTextColor,
                                                 Converter={StaticResource ColorToSolidBrushConverter}}"
@@ -222,7 +222,7 @@
                 <RowDefinition />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <SightSignUWP:CircularGazeButton Grid.Row="1"
+            <local:CircularGazeButton Grid.Row="1"
                                           x:Name="SettingsButton"
                                           AutomationProperties.Name="Settings"
                                           AutomationProperties.HelpText="{Binding Arm.Connected,
