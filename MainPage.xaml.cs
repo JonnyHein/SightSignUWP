@@ -13,6 +13,7 @@ using Windows.UI.Input.Inking.Analysis;
 using Windows.UI.Xaml.Shapes;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
+using Windows.Storage.Pickers;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -150,15 +151,39 @@ namespace SightSignUWP
             inkCanvas.InkPresenter.StrokeContainer.Clear();
 
             // Assume the file is valid and accessible
+            /* TODO :: parse the incoming filename and replace "Signature.isf" */
+           
+            //Windows.Storage.StorageFile file = await 
+            //    Windows.Storage.StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Signature.isf"));
+
+            // TODO :: Unable to load ink from a file onto the inkCanvas.
+            //         Have tried several ways to load a .isf file onto the canvas,
+            //         I am thinking of not support .isf files and just using .gif files.
+            //         GIF files are the UWP standard for loading and saving inkCanvases. It 
+            //         does say that LoadAsync() is backwasrd compatible to .isf,but no luck yet.
             var file = new FileStream(filename, FileMode.Open, FileAccess.Read); // new FileStream(filename, FileMode.Open, FileAccess.Read);
-            if (file != null)
-            {
-                IInputStream stream = file.AsInputStream();
-                await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
-                
-                stream.Dispose();
-            }
-            file.Close();
+            var stream = file.AsInputStream();
+            await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
+
+
+            //file.Close();
+
+            
+            //if (file != null)
+            //{
+            //    var stream = await file.OpenReadAsync();
+
+            //    using (var inputStream = stream.GetInputStreamAt(0))
+            //    {
+            //        await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(inputStream);
+            //    }
+
+            //    stream.Dispose();
+            //}
+            //else
+            //{
+            //    // opeartion cancelled
+            //}
 
             //if (strokeCollection.Count > 0)
             //{
