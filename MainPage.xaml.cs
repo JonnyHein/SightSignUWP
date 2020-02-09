@@ -98,9 +98,6 @@ namespace SightSignUWP
                     CoreInputDeviceTypes.Pen |
                     CoreInputDeviceTypes.Touch;
 
-            // Subscribe to ink strokes as they are drawn on inkCanvas
-            inkCanvas.InkPresenter.StrokesCollected += handleStrokesCollected;
-
             LoadInkOnStartup();
         }
 
@@ -114,15 +111,12 @@ namespace SightSignUWP
             defaultDrawingAttributes.Size = strokeSize;
 
             defaultDrawingAttributes.PenTip = PenTipShape.Circle;
+
+            
             
         }
 
-        private void handleStrokesCollected(object sender,InkStrokesCollectedEventArgs e)
-        {
-            // keep track of how many strokes are on the canvas
-            this.strokeCount += e.Strokes.Count;
-        }
-
+      
 
         /// <summary>
         /// There is more function in the WPF before this one...
@@ -135,11 +129,24 @@ namespace SightSignUWP
         ///</summary>
         private void WriteButton_Click(object sender, RoutedEventArgs e)
         {
-            //// TODO ::refactor this code later
-            //if (inkCanvas.InkPresenter.StrokesCollected)
-            //{
+            // TODO ::refactor this code later
+            var inkStrokes = inkCanvas.InkPresenter.StrokeContainer.GetStrokes();
 
-            //}
+            if (inkStrokes.Count == 0)
+            {
+                return;
+            }
+
+            // TODO :: handle writing ink strokes on canvas by sending 
+            //         Gcode to robot arm.
+
+            // Lift robot arm
+            RobotArm.ArmDown(false);
+
+            // Move to the start of the signature
+            // TODO :: loading the inkstroks increases to count of the 
+
+
         }
 
 
