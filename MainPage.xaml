@@ -57,19 +57,31 @@
             </Canvas>-->
                 
 
-                    <!-- The InkCanvas showing the default ink of the ink drawn by the user. -->
-                    <InkCanvas 
-                        AutomationProperties.Name="Background ink canvas"
-                        x:Name="inkCanvas" 
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                    />
+                <!-- The InkCanvas showing the default ink of the ink drawn by the user. -->
+        <InkCanvas 
+            AutomationProperties.Name="Background ink canvas"
+            x:Name="inkCanvas" 
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+        />
 
-                    <!-- The InkCanvas showing the ink as it's being traced out. -->
-                    <!--<InkCanvas 
-                    AutomationProperties.Name="Tracing ink canvas"
-                    x:Name="inkCanvasAnimations"  
-                    IsHitTestVisible="True"
-                    Visibility="Collapsed" />-->
+        <Button
+            x:Name="writeButton"
+            Content="Write Signature"
+            ClickMode="Press"
+            Click="WriteButton_Click"
+            Width="150"
+            Margin="5"
+            HorizontalAlignment="Left"
+        />
+
+
+
+        <!-- The InkCanvas showing the ink as it's being traced out. -->
+        <!--<InkCanvas 
+        AutomationProperties.Name="Tracing ink canvas"
+        x:Name="inkCanvasAnimations"  
+        IsHitTestVisible="True"
+        Visibility="Collapsed" />-->
     </Grid>
 </Page>

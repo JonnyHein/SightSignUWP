@@ -118,6 +118,15 @@ namespace SightSignUWP
         /// There is more function in the WPF before this one...
         /// Just integrating this in so that it can load in a signature from a file.
         /// </summary>
+        
+
+        ///<summary>
+        /// Creating the Write button functionality [[Testing]]
+        ///</summary>
+        private void WriteButton_Click(object sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("write ink ");
+        }
 
 
         // Load up ink based on the ink that was shown when the app was last run.
