@@ -56,6 +56,7 @@ namespace SightSignUWP
 
         public RobotArm RobotArm { get; }
         private readonly Settings _settings;
+        private int strokeCount = 0;
 
 
         /// <summary>
@@ -97,6 +98,9 @@ namespace SightSignUWP
                     CoreInputDeviceTypes.Pen |
                     CoreInputDeviceTypes.Touch;
 
+            // Subscribe to ink strokes as they are drawn on inkCanvas
+            inkCanvas.InkPresenter.StrokesCollected += handleStrokesCollected;
+
             LoadInkOnStartup();
         }
 
@@ -113,20 +117,32 @@ namespace SightSignUWP
             
         }
 
+        private void handleStrokesCollected(object sender,InkStrokesCollectedEventArgs e)
+        {
+            // keep track of how many strokes are on the canvas
+            this.strokeCount += e.Strokes.Count;
+        }
+
 
         /// <summary>
         /// There is more function in the WPF before this one...
         /// Just integrating this in so that it can load in a signature from a file.
         /// </summary>
-        
+
 
         ///<summary>
         /// Creating the Write button functionality [[Testing]]
         ///</summary>
         private void WriteButton_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("write ink ");
+            //// TODO ::refactor this code later
+            //if (inkCanvas.InkPresenter.StrokesCollected)
+            //{
+
+            //}
         }
+
+
 
 
         // Load up ink based on the ink that was shown when the app was last run.
