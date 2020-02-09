@@ -68,6 +68,7 @@
         <Button
             x:Name="writeButton"
             Content="Write Signature"
+            Background="AliceBlue"
             ClickMode="Press"
             Click="WriteButton_Click"
             Width="150"

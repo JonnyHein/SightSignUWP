@@ -111,9 +111,6 @@ namespace SightSignUWP
             defaultDrawingAttributes.Size = strokeSize;
 
             defaultDrawingAttributes.PenTip = PenTipShape.Circle;
-
-            
-            
         }
 
       
@@ -144,11 +141,27 @@ namespace SightSignUWP
             RobotArm.ArmDown(false);
 
             // Move to the start of the signature
-            // TODO :: loading the inkstroks increases to count of the 
+            var inkPoints = inkStrokes[0].GetInkPoints();
+            MoveDotAndRobotToInkPoint(inkPoints[0]);
 
-
+            // TODO :: implement this function after the arm writes one of the strokes
+            // TODO :: refactor this code.
+            //using (IEnumerator<InkStroke> inkStrokesEnum = inkStrokes.GetEnumerator())
+            //{
+            //    while (inkStrokesEnum.MoveNext())
+            //    {
+            //        InkStroke stroke = inkStrokesEnum.Current;
+            //        var inkPoints = stroke.GetInkPoints();
+            //        MoveDotAndRobotToInkPoint(inkPoints[0]);
+            //    }
+            //}
         }
 
+        private void MoveDotAndRobotToInkPoint(InkPoint inkPoint)
+        {
+            Point pt = inkPoint.Position;
+            RobotArm.Move(pt);
+        }
 
 
 
