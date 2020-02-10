@@ -203,8 +203,74 @@ namespace SightSignUWP
                             LiftArmAndStopAnimationTimer();
                         }
                     }
+                    else
+                    {
+                        // We've reached the end of the last stroke.
+                        _currentAnimatedStrokeIndex = 0;
+
+                        // Hide the dot now that the entire signature's been written
+                        dot.Visibility = Visibility.Collapsed;
+
+                        LiftArmAndStopAnimationTimer();
+
+                        _dispatcherTimerDotAnimation = null;
+
+                        _stampInProgress = false;
+                    }
+                }
+                else
+                {
+                    // The dot is to wait at the end of the stroke until it's clicked.
+                    // So stop the animation timer.
+                    LiftArmAndStopAnimationTimer();
+
+                    // If we've not reached end of the last stroke, Show an opaque dot
+                    // to indicate that it's waiting to be clicked.
+                    if (_currentAnimatedStrokeIndex < inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count - 1)
+                    {
+                        dot.Opacity = 1.0;
+                    }
+                    else
+                    {
+                        // We've reached the end of the last stroke so hide the dot.
+                        dot.Visibility = Visibility.Collapsed;
+
+                        _dispatcherTimerDotAnimation = null;
+                    }
                 }
             }
+            else
+            {
+                // We're continuing to animate the stroke that we are already on.
+
+                var inkPt = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex];
+                var inkPtPrevious = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex - 1];
+
+                // Move to a point that's sufficiently far from the point that the dot's currently at.
+                const int threshold = 1;
+
+                while ((Math.Abs(inkPt.Position.X - inkPtPrevious.Position.X) < threshold) &&
+                       (Math.Abs(inkPt.Position.Y - inkPtPrevious.Position.Y) < threshold))
+                {
+                    ++_currentAnimatedPointIndex;
+
+                    if (_currentAnimatedPointIndex >= inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints().Count)
+                    {
+                        break;
+                    }
+
+                    inkPt = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex];
+                }
+
+                // Leave the arm in its current down state.
+                MoveDotAndRobotToInkPoint(inkPt);
+
+                // Extend the ink stroke being drawn out to include the point where the dot is now.
+                // TODO: FIGURE OUT HOW TO APPEND AN INK POINT TO THE INK POINT LIST OF THE STROKE (READONLY)
+                
+            }
+
+            _inTimer = false;
         }
 
         private void LiftArmAndStopAnimationTimer()
