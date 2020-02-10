@@ -27,6 +27,8 @@ namespace SightSignUWP
     public sealed partial class MainPage : Page
     {
 
+        private InkStroke _strokeBeingAnimated;
+        private int _currentAnimatedStrokeIndex;
         public RobotArm RobotArm { get; }
         private readonly Settings _settings;
         private DispatcherTimer _dispatcherTimerDotAnimation;
@@ -151,7 +153,36 @@ namespace SightSignUWP
 
             _inTimer = true;
 
-            // TODO  :: add more code
+            // Have we created a new stroke for this animation yet? 
+            if (_strokeBeingAnimated == null)
+            {
+                // No, so create the first stroke and add the first dot to it.
+                var firstPt = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[0];
+
+                RobotArm.ArmDown(true);
+
+                AddFirstPointToNewStroke(firstPt);
+            }
+        }
+
+        private void AddFirstPointToNewStroke(InkPoint pt)
+        {
+            // Create a new stroke for the continuing animation.
+            var ptCollection = new List<InkPoint>();
+
+            _strokeBeingAnimated = CreateStroke(ptCollection);
+
+            SetDrawingAttributesFromSettings(_strokeBeingAnimated.DrawingAttributes);
+
+            inkCanvasAnimations.InkPresenter.StrokeContainer.AddStroke(_strokeBeingAnimated);
+        }
+
+        // Create an InkStroke from a list of InkPoints.
+        private InkStroke CreateStroke(List<InkPoint> ptCollection)
+        {
+            var strokeBuilder = new InkStrokeBuilder();
+            System.Numerics.Matrix3x2 matrix = System.Numerics.Matrix3x2.Identity;
+            return strokeBuilder.CreateStrokeFromInkPoints(ptCollection, matrix);
         }
 
 
