@@ -193,9 +193,25 @@ namespace SightSignUWP
                     {
                         // Yes. So move along to the start of the next stroke.
                         MoveToNextStroke();
+
+                        // If we've completed a short stroke, and are to wait for the user
+                        // to click the dot, make the dot opaque and wait for the click.
+                        if (!_stampInProgress)
+                        {
+                            dot.Opacity = 1.0;
+
+                            LiftArmAndStopAnimationTimer();
+                        }
                     }
                 }
             }
+        }
+
+        private void LiftArmAndStopAnimationTimer()
+        {
+            _dispatcherTimerDotAnimation.Stop();
+
+            RobotArm.ArmDown(false);
         }
 
         private void AddFirstPointToNewStroke(InkPoint pt)
