@@ -120,7 +120,7 @@ namespace SightSignUWP
 
             // Begin the timer used for the animation
             _dispatcherTimerDotAnimation = new DispatcherTimer();
-            //_dispatcherTimerDotAnimation.Tick += dispatcherTimerDotAnimation_Tick;
+            _dispatcherTimerDotAnimation.Tick += dispatcherTimerDotAnimation_Tick;
             _dispatcherTimerDotAnimation.Interval = new TimeSpan(0, 0, 0, 0, _settings.AnimationInterval);
 
             // TODO :: implement this function after the arm writes one of the strokes
@@ -142,7 +142,7 @@ namespace SightSignUWP
             RobotArm.Move(pt);
         }
 
-        public void dispatcherTimerDotAnimation_Tick(object sender, EventArgs e)
+        private void dispatcherTimerDotAnimation_Tick(object sender, object e)
         {
             if (_inTimer)
             {
