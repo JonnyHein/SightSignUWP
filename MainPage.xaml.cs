@@ -29,11 +29,13 @@ namespace SightSignUWP
 
         private InkStroke _strokeBeingAnimated;
         private int _currentAnimatedStrokeIndex;
+        private int _currentAnimatedPointIndex;
         public RobotArm RobotArm { get; }
         private readonly Settings _settings;
         private DispatcherTimer _dispatcherTimerDotAnimation;
         private bool _inTimer = false;
 
+        private bool _stampInProgress;
 
         /// <summary>
         /// Initialize the app.
@@ -163,6 +165,37 @@ namespace SightSignUWP
 
                 AddFirstPointToNewStroke(firstPt);
             }
+
+            // Move to the next point along the stroke.
+            ++_currentAnimatedPointIndex;
+
+            // Have we reached the end of a stroke? 
+            if (_currentAnimatedPointIndex >= 
+                inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count)
+            {
+                // If the stroke is really short, we'll not ask the user to click the dot
+                // at both the start and end of the stroke. Instead once the dot is clicked
+                // at the start of the stroke, it will animate to the end of it, and then
+                // automatically move to the start of the next stroke.
+                var shortStroke = (_currentAnimatedPointIndex < 3);
+
+                // Should the dot automatically move to the start of the next stroke?
+                if (_stampInProgress || shortStroke)
+                {
+                    // Yes, so the next animation will be at the start of the stroke.
+                    _currentAnimatedPointIndex = 0;
+
+                    // Move to the next stroke
+                    ++_currentAnimatedStrokeIndex;
+
+                    // Do we have any more strokes to write?
+                    if (_currentAnimatedStrokeIndex < inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count)
+                    {
+                        // Yes. So move along to the start of the next stroke.
+                        MoveToNextStroke();
+                    }
+                }
+            }
         }
 
         private void AddFirstPointToNewStroke(InkPoint pt)
@@ -183,6 +216,21 @@ namespace SightSignUWP
             var strokeBuilder = new InkStrokeBuilder();
             System.Numerics.Matrix3x2 matrix = System.Numerics.Matrix3x2.Identity;
             return strokeBuilder.CreateStrokeFromInkPoints(ptCollection, matrix);
+        }
+
+        private void MoveToNextStroke()
+        {
+            // Move to the next stroke
+            var stylusPtNext = 
+                inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex];
+
+            // We'll create the animation stroke after the first interval.
+            _strokeBeingAnimated = null;
+
+            // Lift the arm up before moving the dot to the start of the next stroke.
+            RobotArm.ArmDown(false);
+
+            MoveDotAndRobotToInkPoint(stylusPtNext);
         }
 
 
