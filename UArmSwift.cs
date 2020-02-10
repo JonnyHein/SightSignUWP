@@ -23,7 +23,14 @@ namespace SightSignUWP
         private string GetPort()
         {
             var task = System.Threading.Tasks.Task.Run(async () => await PortDetails.FindPortAsync());
-            task.Wait();
+            try
+            {
+                task.Wait();
+            }
+            catch (System.AggregateException)
+            {
+                return "NOTFOUND";
+            }
             return task.Result;
         }
 
