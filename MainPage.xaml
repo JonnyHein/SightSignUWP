@@ -32,6 +32,7 @@
             Margin="5"
             HorizontalAlignment="Left"
         />
+        
         <Button 
                 x:Name="dot"
                 AutomationProperties.Name="Dot"
