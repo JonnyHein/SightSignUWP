@@ -52,10 +52,10 @@
 
 
             <!-- The InkCanvas showing the ink as it's being traced out. -->
-        <!--<InkCanvas 
+        <InkCanvas 
         AutomationProperties.Name="Tracing ink canvas"
         x:Name="inkCanvasAnimations"  
         IsHitTestVisible="True"
-        Visibility="Collapsed" />-->
+        Visibility="Collapsed" />
     </Grid>
 </Page>

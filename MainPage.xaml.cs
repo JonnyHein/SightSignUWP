@@ -27,11 +27,15 @@ namespace SightSignUWP
     public sealed partial class MainPage : Page
     {
 
+        private InkStroke _strokeBeingAnimated;
+        private int _currentAnimatedStrokeIndex;
+        private int _currentAnimatedPointIndex;
         public RobotArm RobotArm { get; }
         private readonly Settings _settings;
         private DispatcherTimer _dispatcherTimerDotAnimation;
         private bool _inTimer = false;
 
+        private bool _stampInProgress;
 
         /// <summary>
         /// Initialize the app.
@@ -142,7 +146,7 @@ namespace SightSignUWP
             RobotArm.Move(pt);
         }
 
-        public void dispatcherTimerDotAnimation_Tick(object sender, EventArgs e)
+        private void dispatcherTimerDotAnimation_Tick(object sender, object e)
         {
             if (_inTimer)
             {
@@ -151,7 +155,164 @@ namespace SightSignUWP
 
             _inTimer = true;
 
-            // TODO  :: add more code
+            // Have we created a new stroke for this animation yet? 
+            if (_strokeBeingAnimated == null)
+            {
+                // No, so create the first stroke and add the first dot to it.
+                var firstPt = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[0];
+
+                RobotArm.ArmDown(true);
+
+                AddFirstPointToNewStroke(firstPt);
+            }
+
+            // Move to the next point along the stroke.
+            ++_currentAnimatedPointIndex;
+
+            // Have we reached the end of a stroke? 
+            if (_currentAnimatedPointIndex >= 
+                inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count)
+            {
+                // If the stroke is really short, we'll not ask the user to click the dot
+                // at both the start and end of the stroke. Instead once the dot is clicked
+                // at the start of the stroke, it will animate to the end of it, and then
+                // automatically move to the start of the next stroke.
+                var shortStroke = (_currentAnimatedPointIndex < 3);
+
+                // Should the dot automatically move to the start of the next stroke?
+                if (_stampInProgress || shortStroke)
+                {
+                    // Yes, so the next animation will be at the start of the stroke.
+                    _currentAnimatedPointIndex = 0;
+
+                    // Move to the next stroke
+                    ++_currentAnimatedStrokeIndex;
+
+                    // Do we have any more strokes to write?
+                    if (_currentAnimatedStrokeIndex < inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count)
+                    {
+                        // Yes. So move along to the start of the next stroke.
+                        MoveToNextStroke();
+
+                        // If we've completed a short stroke, and are to wait for the user
+                        // to click the dot, make the dot opaque and wait for the click.
+                        if (!_stampInProgress)
+                        {
+                            dot.Opacity = 1.0;
+
+                            LiftArmAndStopAnimationTimer();
+                        }
+                    }
+                    else
+                    {
+                        // We've reached the end of the last stroke.
+                        _currentAnimatedStrokeIndex = 0;
+
+                        // Hide the dot now that the entire signature's been written
+                        dot.Visibility = Visibility.Collapsed;
+
+                        LiftArmAndStopAnimationTimer();
+
+                        _dispatcherTimerDotAnimation = null;
+
+                        _stampInProgress = false;
+                    }
+                }
+                else
+                {
+                    // The dot is to wait at the end of the stroke until it's clicked.
+                    // So stop the animation timer.
+                    LiftArmAndStopAnimationTimer();
+
+                    // If we've not reached end of the last stroke, Show an opaque dot
+                    // to indicate that it's waiting to be clicked.
+                    if (_currentAnimatedStrokeIndex < inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count - 1)
+                    {
+                        dot.Opacity = 1.0;
+                    }
+                    else
+                    {
+                        // We've reached the end of the last stroke so hide the dot.
+                        dot.Visibility = Visibility.Collapsed;
+
+                        _dispatcherTimerDotAnimation = null;
+                    }
+                }
+            }
+            else
+            {
+                // We're continuing to animate the stroke that we are already on.
+
+                var inkPt = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex];
+                var inkPtPrevious = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex - 1];
+
+                // Move to a point that's sufficiently far from the point that the dot's currently at.
+                const int threshold = 1;
+
+                while ((Math.Abs(inkPt.Position.X - inkPtPrevious.Position.X) < threshold) &&
+                       (Math.Abs(inkPt.Position.Y - inkPtPrevious.Position.Y) < threshold))
+                {
+                    ++_currentAnimatedPointIndex;
+
+                    if (_currentAnimatedPointIndex >= inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints().Count)
+                    {
+                        break;
+                    }
+
+                    inkPt = inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex];
+                }
+
+                // Leave the arm in its current down state.
+                MoveDotAndRobotToInkPoint(inkPt);
+
+                // Extend the ink stroke being drawn out to include the point where the dot is now.
+                // TODO: FIGURE OUT HOW TO APPEND AN INK POINT TO THE INK POINT LIST OF THE STROKE (READONLY)
+                
+            }
+
+            _inTimer = false;
+        }
+
+        private void LiftArmAndStopAnimationTimer()
+        {
+            _dispatcherTimerDotAnimation.Stop();
+
+            RobotArm.ArmDown(false);
+        }
+
+        private void AddFirstPointToNewStroke(InkPoint pt)
+        {
+            // Create a new stroke for the continuing animation.
+            var ptCollection = new List<InkPoint>();
+
+            _strokeBeingAnimated = CreateStroke(ptCollection);
+
+            SetDrawingAttributesFromSettings(_strokeBeingAnimated.DrawingAttributes);
+
+            inkCanvasAnimations.InkPresenter.StrokeContainer.AddStroke(_strokeBeingAnimated);
+        }
+
+        // Create an InkStroke from a list of InkPoints.
+        private InkStroke CreateStroke(List<InkPoint> ptCollection)
+        {
+            var strokeBuilder = new InkStrokeBuilder();
+            System.Numerics.Matrix3x2 matrix = System.Numerics.Matrix3x2.Identity;
+            return strokeBuilder.CreateStrokeFromInkPoints(ptCollection, matrix);
+        }
+
+        private void MoveToNextStroke()
+        {
+            // Move to the next stroke
+            var stylusPtNext = 
+                inkCanvas.InkPresenter.StrokeContainer.GetStrokes()[_currentAnimatedStrokeIndex].GetInkPoints()[_currentAnimatedPointIndex];
+
+            // We'll create the animation stroke after the first interval.
+            _strokeBeingAnimated = null;
+
+            // Lift the arm up before moving the dot to the start of the next stroke.
+            RobotArm.ArmDown(false);
+
+            MoveDotAndRobotToInkPoint(stylusPtNext);
         }
 
 
