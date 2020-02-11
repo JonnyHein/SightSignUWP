@@ -107,13 +107,15 @@ namespace SightSignUWP
             // TODO ::refactor this code later
             var inkStrokes = inkCanvas.InkPresenter.StrokeContainer.GetStrokes();
 
-            if (inkStrokes.Count == 0)
+            // ensure we actually have strokes, and we are not in the middle of a signature
+            if (inkStrokes.Count == 0 || _dispatcherTimerDotAnimation != null)
             {
                 return;
             }
 
-            // TODO :: handle writing ink strokes on canvas by sending 
-            //         Gcode to robot arm.
+            // making tracing dot visible now
+            dot.Visibility = Visibility.Visible;
+            dot.Opacity = 1.0;
 
             // Lift robot arm
             RobotArm.ArmDown(false);
@@ -265,6 +267,19 @@ namespace SightSignUWP
                 // Leave the arm in its current down state.
                 MoveDotAndRobotToInkPoint(inkPt);
 
+                // add all ink points from animated stroke to list
+                List<InkPoint> updatedPtCollection = new List<InkPoint>();
+                foreach (InkPoint point in _strokeBeingAnimated.GetInkPoints())
+                {
+                    updatedPtCollection.Add(point);
+                }
+                updatedPtCollection.Add(inkPt);  // append new inkPt to list
+
+                // update animated stroke
+                _strokeBeingAnimated = CreateStroke(updatedPtCollection);
+
+
+                
                 // Extend the ink stroke being drawn out to include the point where the dot is now.
                 // TODO: FIGURE OUT HOW TO APPEND AN INK POINT TO THE INK POINT LIST OF THE STROKE (READONLY)
                 
@@ -284,6 +299,7 @@ namespace SightSignUWP
         {
             // Create a new stroke for the continuing animation.
             var ptCollection = new List<InkPoint>();
+            ptCollection.Add(pt);
 
             _strokeBeingAnimated = CreateStroke(ptCollection);
 
@@ -296,7 +312,7 @@ namespace SightSignUWP
         private InkStroke CreateStroke(List<InkPoint> ptCollection)
         {
             var strokeBuilder = new InkStrokeBuilder();
-            System.Numerics.Matrix3x2 matrix = System.Numerics.Matrix3x2.Identity;
+            var matrix = System.Numerics.Matrix3x2.Identity;
             return strokeBuilder.CreateStrokeFromInkPoints(ptCollection, matrix);
         }
 
@@ -364,7 +380,50 @@ namespace SightSignUWP
 
         private void Dot_OnClick(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("clicked");
+            // get all strokes from inkCanvas
+            var inkStrokes = inkCanvas.InkPresenter.StrokeContainer.GetStrokes();
+
+
+            if (_dispatcherTimerDotAnimation != null)
+            {
+                // Only react to the click on the dot if the the timer's not currently running.
+                // If the timer is running, then the dot's already being animated.
+                if (!_dispatcherTimerDotAnimation.IsEnabled)
+                {
+                    // Are we at the end of a stroke?
+                    if (_currentAnimatedPointIndex >=
+                        inkStrokes[_currentAnimatedStrokeIndex].GetInkPoints().Count - 1)
+                    {
+                        // Make sure the robot arm is raised at the end of the stroke.
+                        RobotArm.ArmDown(false);
+
+                        // If this isn't the last stroke, move to the next stroke.
+                        if (_currentAnimatedStrokeIndex < inkStrokes.Count - 1)
+                        {
+                            // Move to the start of the next stroke.
+                            _currentAnimatedPointIndex = 0;
+
+                            ++_currentAnimatedStrokeIndex;
+
+                            MoveToNextStroke();
+                        }
+                    }
+                    else
+                    {
+                        // We're at the start of a stroke, so start animating the dot.
+                        _dispatcherTimerDotAnimation.Start();
+
+                        // Show a translucent dot while it's being animated. If a high contrast theme
+                        // is active, keep the dot at 100% opacity to keep it high contrast against
+                        // its background.
+                        //if (!SystemParameters.HighContrast)
+                        //{
+                        //  dot.Opacity = 0.5;
+                        //}
+                        dot.Opacity = 0.5;
+                    }
+                }
+            }
         }
 
     }
