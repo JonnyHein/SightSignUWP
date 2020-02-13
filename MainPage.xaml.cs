@@ -117,6 +117,10 @@ namespace SightSignUWP
             dot.Visibility = Visibility.Visible;
             dot.Opacity = 1.0;
 
+            // Show the animation canvas and delete the previously-traced ink
+            inkCanvasAnimations.Visibility = Visibility.Visible;
+            inkCanvasAnimations.InkPresenter.StrokeContainer.Clear();
+
             // The dot moves form point to point along each stroke being traced out.
             _currentAnimatedPointIndex = 0;
             _currentAnimatedStrokeIndex = 0;
