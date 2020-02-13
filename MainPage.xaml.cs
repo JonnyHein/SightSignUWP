@@ -117,12 +117,19 @@ namespace SightSignUWP
             dot.Visibility = Visibility.Visible;
             dot.Opacity = 1.0;
 
+            // The dot moves form point to point along each stroke being traced out.
+            _currentAnimatedPointIndex = 0;
+            _currentAnimatedStrokeIndex = 0;
+
             // Lift robot arm
             RobotArm.ArmDown(false);
 
             // Move to the start of the signature
-            var inkPoints = inkStrokes[0].GetInkPoints();
-            MoveDotAndRobotToInkPoint(inkPoints[0]);
+            var inkPointFirst = inkStrokes[0].GetInkPoints()[0];
+            MoveDotAndRobotToInkPoint(inkPointFirst);
+
+            // We'll create the animation stroke once the animation timer has fired.
+            _strokeBeingAnimated = null;
 
             // Begin the timer used for the animation
             _dispatcherTimerDotAnimation = new DispatcherTimer();
