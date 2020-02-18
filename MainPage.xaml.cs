@@ -98,19 +98,28 @@ namespace SightSignUWP
         /// Just integrating this in so that it can load in a signature from a file.
         /// </summary>
 
+        // Show the dot at the start of the ink, and when that's clicked, animate the dot through
+        // the entire signature, sending the point data to the robot as the dot progresses.
+        // TODO: Create the stamp button in the UI and connect it to this function.
+        private void StampButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Stop any in-progress wrting visuals.
+            ResetWriting();
+
+            _stampInProgress = true;
+
+            WriteSignature();
+        }
 
         ///<summary>
         /// Creating the Write button functionality [[Testing]]
         ///</summary>
         private void WriteButton_Click(object sender, RoutedEventArgs e)
-        {
-            WriteSignature();
-        }
+        { 
+            // Stop any in-progress writing.
+            ResetWriting();
 
-        private void MoveDotAndRobotToInkPoint(InkPoint inkPoint)
-        {
-            Point pt = inkPoint.Position;
-            RobotArm.Move(pt);
+            WriteSignature();
         }
         
         // Resets visuals associated with dot animation and tracing out ink.
@@ -192,6 +201,12 @@ namespace SightSignUWP
             //        MoveDotAndRobotToInkPoint(inkPoints[0]);
             //    }
             //}
+        }
+
+        private void MoveDotAndRobotToInkPoint(InkPoint inkPoint)
+        {
+            Point pt = inkPoint.Position;
+            RobotArm.Move(pt);
         }
 
         private void dispatcherTimerDotAnimation_Tick(object sender, object e)
