@@ -104,6 +104,44 @@ namespace SightSignUWP
         ///</summary>
         private void WriteButton_Click(object sender, RoutedEventArgs e)
         {
+            WriteSignature();
+        }
+
+        private void MoveDotAndRobotToInkPoint(InkPoint inkPoint)
+        {
+            Point pt = inkPoint.Position;
+            RobotArm.Move(pt);
+        }
+        
+        // Resets visuals associated with dot animation and tracing out ink.
+        // Note that this does not have any effect on the robot.
+        private void ResetWriting()
+        {
+            _stampInProgress = false;
+
+            if (_dispatcherTimerDotAnimation != null)
+            {
+                _dispatcherTimerDotAnimation.Stop();
+                _dispatcherTimerDotAnimation = null;
+            }
+
+            _currentAnimatedPointIndex = 0;
+            _currentAnimatedStrokeIndex = 0;
+
+            inkCanvasAnimations.InkPresenter.StrokeContainer.Clear();
+            inkCanvasAnimations.Visibility = Visibility.Collapsed;
+
+            dot.Visibility = Visibility.Collapsed;
+
+            foreach (var stroke in inkCanvas.InkPresenter.StrokeContainer.GetStrokes())
+            {
+                // TODO: FIGURE A WORKAROUND TO THIS.
+                stroke.DrawingAttributes.Color = _settings.InkColor;
+            }
+        }
+
+        private void WriteSignature()
+        {
             // TODO ::refactor this code later
             var inkStrokes = inkCanvas.InkPresenter.StrokeContainer.GetStrokes();
 
@@ -151,12 +189,6 @@ namespace SightSignUWP
             //        MoveDotAndRobotToInkPoint(inkPoints[0]);
             //    }
             //}
-        }
-
-        private void MoveDotAndRobotToInkPoint(InkPoint inkPoint)
-        {
-            Point pt = inkPoint.Position;
-            RobotArm.Move(pt);
         }
 
         private void dispatcherTimerDotAnimation_Tick(object sender, object e)
@@ -436,7 +468,6 @@ namespace SightSignUWP
                 }
             }
         }
-
     }
 
 
