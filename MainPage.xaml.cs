@@ -392,6 +392,46 @@ namespace SightSignUWP
             MoveDotAndRobotToInkPoint(stylusPtNext);
         }
 
+        #region ButtonClickHandlers
+        // When the Edit button is clicked, the user can ink directly in the app.
+        // TODO: Create the buttons in the UI that are used in the commented code below.
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResetWriting();
+
+            // TODO: Uncomment once buttons have been created in the UI
+            /*if (StampButton.Visibility == Visibility.Visible)
+            {
+                EditButton.Content = "Done";
+
+                StampButton.Visibility = Visibility.Collapsed;
+                ClearButton.Visibility = Visibility.Visible;
+
+                inkCanvas.IsEnabled = true;
+            }
+            else
+            {
+                EditButton.Content = "Edit";
+
+                StampButton.Visibility = Visibility.Visible;
+                ClearButton.Visibility = Visibility.Collapsed;
+
+                inkCanvas.IsEnabled = false;
+            }
+
+            WriteButton.Visibility = StampButton.Visibility;
+
+            SaveButton.Visibility = ClearButton.Visibility;
+            LoadButton.Visibility = ClearButton.Visibility;*/
+        }
+
+        // Clear all ink from the app.
+        private void ClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            inkCanvas.InkPresenter.StrokeContainer.Clear();
+            inkCanvasAnimations.InkPresenter.StrokeContainer.Clear();
+        }
+
 
         // Load up ink based on the ink that was shown when the app was last run.
         private void LoadInkOnStartup()
