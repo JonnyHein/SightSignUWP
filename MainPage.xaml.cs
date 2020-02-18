@@ -432,51 +432,21 @@ namespace SightSignUWP
             inkCanvasAnimations.InkPresenter.StrokeContainer.Clear();
         }
 
-
-        // Load up ink based on the ink that was shown when the app was last run.
-        private void LoadInkOnStartup()
+        // Save whatever ink is shown in the InkCanvas that the user can ink on, to an ISF file.
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            var filename = Settings1.Default.LoadedInkLocation;
-            if (string.IsNullOrEmpty(filename))
-            {
-                // Look for default ink if we can find it in the same folder as the exe.
-                filename = AppDomain.CurrentDomain.BaseDirectory + "Signature.isf";
-            }
-
-            if (File.Exists(filename))
-            {
-                AddInkFromFile(filename);
-            }
+            // TODO
         }
 
-
-        /// <summary>
-        /// Add ink to the InkCanvas, based on the contents of the supplied ISF file.
-        /// </summary>
-        private async void AddInkFromFile(string filename)
+        // Load up ink from an ISF file.
+        private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(filename))
-            {
-                return;
-            }
+            // TODO
+        }
 
-            // Remove any existing ink first.
-            inkCanvas.InkPresenter.StrokeContainer.Clear();
-
-            // Assume the file is valid and accessible
-            var file = new FileStream(filename, FileMode.Open, FileAccess.Read); // new FileStream(filename, FileMode.Open, FileAccess.Read);
-            var stream = file.AsInputStream();
-            await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
-
-
-            //if (strokeCollection.Count > 0)
-            //{
-            //    // Add ink to the InkCanvas, similar to the ink loaded from the supplied file,
-            //    // but with evenly distributed points along the strokes.
-            //    GenerateStrokesWithEvenlyDistributedPoints(strokeCollection);
-
-            //    ApplySettingsToInk();
-            //}
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO. Also, need to implement the settings window.
         }
 
         private void Dot_OnClick(object sender, RoutedEventArgs e)
@@ -525,6 +495,54 @@ namespace SightSignUWP
                     }
                 }
             }
+        }
+
+        #endregion ButtonClickHandlers
+
+        // Load up ink based on the ink that was shown when the app was last run.
+        private void LoadInkOnStartup()
+        {
+            var filename = Settings1.Default.LoadedInkLocation;
+            if (string.IsNullOrEmpty(filename))
+            {
+                // Look for default ink if we can find it in the same folder as the exe.
+                filename = AppDomain.CurrentDomain.BaseDirectory + "Signature.isf";
+            }
+
+            if (File.Exists(filename))
+            {
+                AddInkFromFile(filename);
+            }
+        }
+
+
+        /// <summary>
+        /// Add ink to the InkCanvas, based on the contents of the supplied ISF file.
+        /// </summary>
+        private async void AddInkFromFile(string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+            {
+                return;
+            }
+
+            // Remove any existing ink first.
+            inkCanvas.InkPresenter.StrokeContainer.Clear();
+
+            // Assume the file is valid and accessible
+            var file = new FileStream(filename, FileMode.Open, FileAccess.Read); // new FileStream(filename, FileMode.Open, FileAccess.Read);
+            var stream = file.AsInputStream();
+            await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
+
+
+            //if (strokeCollection.Count > 0)
+            //{
+            //    // Add ink to the InkCanvas, similar to the ink loaded from the supplied file,
+            //    // but with evenly distributed points along the strokes.
+            //    GenerateStrokesWithEvenlyDistributedPoints(strokeCollection);
+
+            //    ApplySettingsToInk();
+            //}
         }
     }
 
