@@ -135,8 +135,11 @@ namespace SightSignUWP
 
             foreach (var stroke in inkCanvas.InkPresenter.StrokeContainer.GetStrokes())
             {
-                // TODO: FIGURE A WORKAROUND TO THIS.
-                stroke.DrawingAttributes.Color = _settings.InkColor;
+                stroke.DrawingAttributes.Color = Windows.UI.ColorHelper.FromArgb(
+                    _settings.InkColor.A,
+                    _settings.InkColor.R,
+                    _settings.InkColor.G,
+                    _settings.InkColor.B);
             }
         }
 
