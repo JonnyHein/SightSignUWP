@@ -204,7 +204,21 @@ namespace SightSignUWP
                         baseLength = currentLength;
                     }
 
-                    // TODO: FINISH CONVERSION OF THIS FUNCTION
+                    // Always add at least two points on the stroke
+                    var count = Math.Max(2, (int)((_settings.AnimationPointsOnFirstStroke * currentLength) / baseLength));
+
+                    // Now generate the InkPointCollection which will be used to add ink to the InkCanvas.
+                    var inkPoints = new List<InkPoint>();
+
+                    for (var i = 0; i < count; ++i)
+                    {
+                        var distanceFraction = i / (double)count;
+
+                        Point pt;
+                        Point ptTangent;
+
+                        
+                    }
                 }
             }
         }
@@ -674,7 +688,6 @@ namespace SightSignUWP
 
         #endregion ButtonClickHandlers
     }
-
 
     //public class ArmStateToDotWidthConverter : IValueConverter
     //{
