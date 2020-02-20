@@ -91,7 +91,182 @@ namespace SightSignUWP
             defaultDrawingAttributes.PenTip = PenTipShape.Circle;
         }
 
+        // protected override void OnClosed(EventArgs e) {}
 
+        // private void MainWindow_OnLoaded(object sender, RoutedEventArgs e) {}
+
+        // private void MainWindow_OnClosing(object sender, CancelEventArgs e) {}
+
+        #region LoadInk
+
+        // Load up ink based on the ink that was shown when the app was last run.
+        private void LoadInkOnStartup()
+        {
+            var filename = Settings1.Default.LoadedInkLocation;
+            if (string.IsNullOrEmpty(filename))
+            {
+                // Look for default ink if we can find it in the same folder as the exe.
+                filename = AppDomain.CurrentDomain.BaseDirectory + "Signature.isf";
+            }
+
+            if (File.Exists(filename))
+            {
+                AddInkFromFile(filename);
+            }
+        }
+
+        /// <summary>
+        /// Add ink to the InkCanvas, based on the contents of the supplied ISF file.
+        /// </summary>
+        private async void AddInkFromFile(string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+            {
+                return;
+            }
+
+            // Remove any existing ink first.
+            inkCanvas.InkPresenter.StrokeContainer.Clear();
+
+            // Assume the file is valid and accessible
+            var file = new FileStream(filename, FileMode.Open, FileAccess.Read); // new FileStream(filename, FileMode.Open, FileAccess.Read);
+            var stream = file.AsInputStream();
+            await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
+
+
+            //if (strokeCollection.Count > 0)
+            //{
+            //    // Add ink to the InkCanvas, similar to the ink loaded from the supplied file,
+            //    // but with evenly distributed points along the strokes.
+            //    GenerateStrokesWithEvenlyDistributedPoints(strokeCollection);
+
+            //    ApplySettingsToInk();
+            //}
+        }
+
+        // Apply the current settings to the currently loaded ink
+        private void ApplySettingsToInk()
+        {
+            if (inkCanvas.InkPresenter.StrokeContainer.GetStrokes().Count > 0)
+            {
+                foreach (var stroke in inkCanvas.InkPresenter.StrokeContainer.GetStrokes())
+                {
+                    SetDrawingAttributesFromSettings(stroke.DrawingAttributes);
+                }
+            }
+        }
+
+        // Add ink to the InkCanvas, similar to the ink contained in the supplied StrokeCollection,
+        // but with evenly distributed points along the strokes. By doing this, when we animate the 
+        // dot along the ink shown in the InkCanvas, the dot's speed is constant. If ink generated
+        // by the user was used for dot animation, then the dot's speed would vary based on the
+        // speed at which the ink was written.
+        private void GenerateStrokesWithEvenlyDistributedPoints(InkPresenter inkPresenter)
+        {
+            var strokes = inkPresenter.StrokeContainer.GetStrokes();
+
+            double baseLength = 0;
+
+            for (var idx = 0; idx < strokes.Count; ++idx)
+            {
+                var existingInkPoints = strokes[idx].GetInkPoints();
+                if (existingInkPoints.Count > 0)
+                {
+                    // First create a PathGeometry from all the points making up this stroke.
+                    var start = ConvertInkPointToPoint(existingInkPoints[0]);
+
+                    var segments = new PathSegmentCollection();
+
+                    for (var i = 1; i < existingInkPoints.Count; i++)
+                    {
+                        var segment = new LineSegment();
+                        segment.Point = ConvertInkPointToPoint(existingInkPoints[i]);
+                        segments.Add(segment);
+                    }
+
+                    var figure = new PathFigure();
+                    figure.StartPoint = start;
+                    figure.Segments = segments;
+                    figure.IsClosed = false;
+
+                    var pathGeometry = new PathGeometry();
+                    pathGeometry.Figures.Add(figure);
+
+                    // Get the length of the PathGeometry. The number of points created along each
+                    // stroke will be proportional to the number of points on the first stroke. For
+                    // example, if the first stroke has 100 points along it, then if the second
+                    // stroke is 50% longer, then that stroke will have 150 points. By doing this,
+                    // the animating dot's speed will seem constant for all strokes, regardless of 
+                    // the length of the strokes
+                    var currentLength = GetLength(pathGeometry);
+                    if (idx == 0)
+                    {
+                        baseLength = currentLength;
+                    }
+
+                    // TODO: FINISH CONVERSION OF THIS FUNCTION
+                }
+            }
+        }
+
+        #endregion LoadInk
+
+        // Helper function to convert an inkpoint to a point.
+        private Point ConvertInkPointToPoint(InkPoint inkPoint)
+        {
+            var point = new Point();
+            point.X = inkPoint.Position.X;
+            point.Y = inkPoint.Position.Y;
+
+            return point;
+        }
+
+        // Determine the full length of a PathGeometry, assuming it's composed only of
+        // LineSegments and PolylineSegments.
+        public static double GetLength(PathGeometry pathGeometry)
+        {
+            var length = 0.0;
+
+            foreach (var pf in pathGeometry.Figures)
+            {
+                var start = pf.StartPoint;
+
+                foreach (var pathSegment in pf.Segments)
+                {
+                    var lineSegment = pathSegment as LineSegment;
+                    if (lineSegment != null)
+                    {
+                        length += Distance(start, lineSegment.Point);
+
+                        start = lineSegment.Point;
+                    }
+                    else
+                    {
+                        var polylineSegment = pathSegment as PolyLineSegment;
+                        if (polylineSegment != null)
+                        {
+                            foreach (var point in polylineSegment.Points)
+                            {
+                                length += Distance(start, point);
+
+                                start = point;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Unexpected data - Segment is neither LineSegment or PolyLineSegment.");
+                        }
+                    }
+                }
+            }
+
+            return length;
+        }
+
+        private static double Distance(Point p1, Point p2)
+        {
+            return Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2));
+        }
 
         /// <summary>
         /// There is more function in the WPF before this one...
@@ -498,52 +673,6 @@ namespace SightSignUWP
         }
 
         #endregion ButtonClickHandlers
-
-        // Load up ink based on the ink that was shown when the app was last run.
-        private void LoadInkOnStartup()
-        {
-            var filename = Settings1.Default.LoadedInkLocation;
-            if (string.IsNullOrEmpty(filename))
-            {
-                // Look for default ink if we can find it in the same folder as the exe.
-                filename = AppDomain.CurrentDomain.BaseDirectory + "Signature.isf";
-            }
-
-            if (File.Exists(filename))
-            {
-                AddInkFromFile(filename);
-            }
-        }
-
-
-        /// <summary>
-        /// Add ink to the InkCanvas, based on the contents of the supplied ISF file.
-        /// </summary>
-        private async void AddInkFromFile(string filename)
-        {
-            if (string.IsNullOrEmpty(filename))
-            {
-                return;
-            }
-
-            // Remove any existing ink first.
-            inkCanvas.InkPresenter.StrokeContainer.Clear();
-
-            // Assume the file is valid and accessible
-            var file = new FileStream(filename, FileMode.Open, FileAccess.Read); // new FileStream(filename, FileMode.Open, FileAccess.Read);
-            var stream = file.AsInputStream();
-            await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
-
-
-            //if (strokeCollection.Count > 0)
-            //{
-            //    // Add ink to the InkCanvas, similar to the ink loaded from the supplied file,
-            //    // but with evenly distributed points along the strokes.
-            //    GenerateStrokesWithEvenlyDistributedPoints(strokeCollection);
-
-            //    ApplySettingsToInk();
-            //}
-        }
     }
 
 

@@ -19,7 +19,7 @@ namespace SightSignUWP
         private double _inkWidth;
         private double _dotWidth;
         private double _dotDownWidth;
-        private Windows.UI.Color _inkColor;
+        private Color _inkColor;
         private Color _fadedInkColor;
         private Color _dotColor;
         private Color _dotDownColor;
@@ -111,7 +111,7 @@ namespace SightSignUWP
             }
         }
 
-        public Windows.UI.Color InkColor
+        public Color InkColor
         {
             get
             {
