@@ -217,7 +217,10 @@ namespace SightSignUWP
                         Point pt;
                         Point ptTangent;
 
-                        
+                        // This doesn't work, try something similar to what's found here:
+                        // https://stackoverflow.com/questions/46647785/is-there-an-equivalent-for-wpfs-geometry-data-getflattenedgeometry-in-uwp
+
+                        // pathGeometry.GetPointAtFraction();
                     }
                 }
             }
